@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="mvp.css">
+</head>
+<body>
+  <div class="wrapper">
+    <div class="time=container">
+      <p>max: <span id="max-span"></span></p>
+      <p>min: <span id="min-span"></span></p>
+    </div>
+    <canvas id="canvas" width="128" height="128"></canvas>
+    <img src="3.jpg" id="img">
+  </div>
+  <canvas id="resize-canvas" width="1920" height="1280" hidden></canvas>
+  <script type="module">
+    const maxEl = document.getElementById('max-span');
+    const minEl = document.getElementById('min-span');
+    const resizeCtx = document.getElementById('resize-canvas').getContext('2d');
+    const timeMap = new Map();
+    const width = 1920;
+    const height = 1280;
+
+    const img = document.getElementById("img");
+    
+    let max = 0;
+    let min = 999;
+    
+    const aa = () => {
+      resizeCtx.drawImage(img, 0, 0, width, height);
+      
+      const canvas2 = document.getElementById("canvas");
+      const ctx2 = canvas2.getContext("2d");
+      ctx2.drawImage(canvas, 0, 0, width, height, 0, 7, 128, 114);
+    };
+    
+    const loop = () => {
+      const s = performance.now();
+      aa();
+      const time = Math.ceil(performance.now() - s);
+      if (timeMap.has(time)) {
+        timeMap.set(time, timeMap.get(time) + 1);
+      } else {
+        timeMap.set(time, 1);
+      }
+      console.log(Array.from(timeMap.entries()).sort((a,b) => a[0] - b[0]));
+      if (time > max) {
+        max = time;
+        maxEl.textContent = max;
+      }
+      if (time < min) {
+        min = time;
+        minEl.textContent = min;
+      }
+      requestAnimationFrame(loop)
+    }
+
+    loop();
+  </script>
+</body>
+</html>
